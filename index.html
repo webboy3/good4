@@ -1,74 +1,35 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <title>Contact Form</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <style>
-    form { max-width: 480px; margin: 2rem auto; display: grid; gap: 12px; }
-    input, textarea, button { padding: 10px; font-size: 16px; }
-  </style>
-</head>
-<body>
-  <form id="contactForm">
-    <input type="text" name="name" placeholder="Your name" required />
-    <input type="email" name="email" placeholder="Your email" required />
-    <input type="text" name="subject" placeholder="Subject" required />
-    <textarea name="message" placeholder="Your message" rows="6" required></textarea>
-    <button type="submit">Send</button>
-    <p id="status"></p>
-  </form>
+<form id="contactForm">
+  <input type="text" name="name" placeholder="Your name" required />
+  <input type="email" name="email" placeholder="Your email" required />
+  <input type="text" name="subject" placeholder="Subject" required />
+  <textarea name="message" placeholder="Your message" rows="6" required></textarea>
+  <button type="submit">Send</button>
+  <p id="status"></p>
+</form>
 
-  <script>
-    const form = document.getElementById('contactForm');
-    const statusEl = document.getElementById('status');
+<script>
+  const form = document.getElementById('contactForm');
+  const statusEl = document.getElementById('status');
 
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      statusEl.textContent = 'Sending...';
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    statusEl.textContent = 'Sending...';
 
-      const data = Object.fromEntries(new FormData(form));
+    const formData = Object.fromEntries(new FormData(form));
 
-      // WARNING: Do not expose your REAL API key in production!
-      const API_KEY = '0D1D2153E934E90EABF46331EC5FF9E3AD56DBCB2911A0712CD4567FAD8B2275FE939F99F3D4F39206B82B6AFA937649';
+    try {
+      const res = await fetch('/api/send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+      });
 
-      // Example payload for Elastic Email v4-style send
-      const payload = {
-        Recipients: { To: [ "akinola11549@outlook.com" ] },
-        Content: {
-          Subject: data.subject,
-          From: "akinola11549@outlook.com",
-          Body: [
-            {
-              ContentType: "PlainText",
-              Content: `From: ${data.name} <${data.email}>\n\n${data.message}`
-            }
-          ]
-        }
-      };
+      if (!res.ok) throw new Error(await res.text());
 
-      try {
-        const res = await fetch('https://api.elasticemail.com/v4/emails', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-ElasticEmail-ApiKey': API_KEY
-          },
-          body: JSON.stringify(payload)
-        });
-
-        if (!res.ok) {
-          const err = await res.text();
-          throw new Error(err || 'Failed to send');
-        }
-
-        statusEl.textContent = 'Message sent!';
-        form.reset();
-      } catch (err) {
-        console.error(err);
-        statusEl.textContent = 'Sending failed. Please try again.';
-      }
-    });
-  </script>
-</body>
-</html>
+      statusEl.textContent = 'Message sent!';
+      form.reset();
+    } catch (err) {
+      statusEl.textContent = 'Sending failed. Please try again.';
+    }
+  });
+</script>
