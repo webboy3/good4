@@ -1,35 +1,7 @@
-<form id="contactForm">
-  <input type="text" name="name" placeholder="Your name" required />
-  <input type="email" name="email" placeholder="Your email" required />
-  <input type="text" name="subject" placeholder="Subject" required />
-  <textarea name="message" placeholder="Your message" rows="6" required></textarea>
-  <button type="submit">Send</button>
-  <p id="status"></p>
+<form action="https://api.web3forms.com/submit" method="POST">
+  <input type="hidden" name="access_key" value="bd395d4f-052f-46be-bebe-62e62bf140d1">
+  <input type="text" name="name" required>
+  <input type="email" name="email" required>
+  <textarea name="message" required></textarea>
+  <button type="submit">Submit Form</button>
 </form>
-
-<script>
-  const form = document.getElementById('contactForm');
-  const statusEl = document.getElementById('status');
-
-  form.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    statusEl.textContent = 'Sending...';
-
-    const formData = Object.fromEntries(new FormData(form));
-
-    try {
-      const res = await fetch('/api/send', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
-      });
-
-      if (!res.ok) throw new Error(await res.text());
-
-      statusEl.textContent = 'Message sent!';
-      form.reset();
-    } catch (err) {
-      statusEl.textContent = 'Sending failed. Please try again.';
-    }
-  });
-</script>
