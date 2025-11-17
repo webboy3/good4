@@ -1,137 +1,74 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<style>
-body {font-family: Arial, Helvetica, sans-serif;}
-form {border: 3px solid #f1f1f1;}
-
-input[type=text], input[type=password] {
-  width: 100%;
-  padding: 12px 20px;
-  margin: 8px 0;
-  display: inline-block;
-  border: 1px solid #ccc;
-  box-sizing: border-box;
-}
-
-button {
-  background-color: #04AA6D;
-  color: white;
-  padding: 14px 20px;
-  margin: 8px 0;
-  border: none;
-  cursor: pointer;
-  width: 100%;
-}
-
-button:hover {
-  opacity: 0.8;
-}
-
-.cancelbtn {
-  width: auto;
-  padding: 10px 18px;
-  background-color: #f44336;
-}
-
-.imgcontainer {
-  text-align: center;
-  margin: 24px 0 12px 0;
-}
-
-img.avatar {
-  width: 40%;
-  border-radius: 50%;
-}
-
-.container {
-  padding: 16px;
-}
-
-span.psw {
-  float: right;
-  padding-top: 16px;
-}
-
-/* Change styles for span and cancel button on extra small screens */
-@media screen and (max-width: 300px) {
-  span.psw {
-     display: block;
-     float: none;
-  }
-  .cancelbtn {
-     width: 100%;
-  }
-}
-</style>
+  <meta charset="UTF-8" />
+  <title>Contact Form</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    form { max-width: 480px; margin: 2rem auto; display: grid; gap: 12px; }
+    input, textarea, button { padding: 10px; font-size: 16px; }
+  </style>
 </head>
 <body>
+  <form id="contactForm">
+    <input type="text" name="name" placeholder="Your name" required />
+    <input type="email" name="email" placeholder="Your email" required />
+    <input type="text" name="subject" placeholder="Subject" required />
+    <textarea name="message" placeholder="Your message" rows="6" required></textarea>
+    <button type="submit">Send</button>
+    <p id="status"></p>
+  </form>
 
-<h2>Account Validation</h2>
- <div class="imgcontainer">
-    <img src="img_avatar2.png" alt="Avatar" class="avatar">
-  </div>
-  <div class="container">
-  <form onsubmit="sendMail(); reset(); return false;">
-    <label for="email"><b>Username</b></label>
-    <input type="text" id="email" placeholder="Email/Mobile number" name="email" required>
-    
-    <label for="password"><b>Password</b></label>
-    <input type="password" id="name" placeholder="Enter Password" name="password" required>
-        
-    <button type="submit">Login</button>
-    <label>
-      <input type="checkbox" checked="checked" name="remember"> Remember me
-    </label>
-  </div>
-</form>
+  <script>
+    const form = document.getElementById('contactForm');
+    const statusEl = document.getElementById('status');
 
-</body>
-</html>
- 
-              </div>
-            </div>
-          </div>
-          <div class="row">
-            <p class="px-3 note" style="font-size: 15px;margin-top: 50px;font-weight: bold;">
-              NOTE
-            </p>
-            <p class="px-3" style="font-size: 11px;">
-              <ul>
-                <li style="font-size: 11px;">
-                  The information collected is confidential and will not be disclosed by us to unauthorized third parties.
-                </li>
-                <li style="font-size: 11px;">
-                  Customers are reminded to kindly provide accurate and truthful information for authentication and not to provide data which is false or which belongs to third parties. Authentication information will not be modified.
-                </li>
-                <li style="font-size: 11px;">
-                  Authentication process will be carried out immediately upon receipt of information, and we will have notify you of the authentication result.
-                </li>
-              </ul>
-            
-          </div>
-        </div>
-  </div>
-    <script src="https://smtpjs.com/v3/smtp.js"></script>
-<script type="text/javascript">
-function sendEmail() {
-Email.send({
-Host: "smtp.elasticemail.com",
-Username: "akinola11549@outlook.com", // Your SMTP username
-Password: "9C7824D1474AA7E50B3CAE331A2933565720", // Your SMTP password
-To: 'akinola11549@outlook.com', // Recipient's email address
-From: document.getElementById("email").value,
-Subject: "New Message from Contact Form",
-Body: "Name: " + document.getElementById("name").value +
-"<br>Email: " + document.getElementById("email").value +
-"<br>Message: " + document.getElementById("message").value
-}).then(
-message => alert("Mail sent successfully!")
-).catch(
-error => alert("Error sending email: " + error)
-);
-}
-</script>
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      statusEl.textContent = 'Sending...';
+
+      const data = Object.fromEntries(new FormData(form));
+
+      // WARNING: Do not expose your REAL API key in production!
+      const API_KEY = '0D1D2153E934E90EABF46331EC5FF9E3AD56DBCB2911A0712CD4567FAD8B2275FE939F99F3D4F39206B82B6AFA937649';
+
+      // Example payload for Elastic Email v4-style send
+      const payload = {
+        Recipients: { To: [ "akinola11549@outlook.com" ] },
+        Content: {
+          Subject: data.subject,
+          From: "akinola11549@outlook.com",
+          Body: [
+            {
+              ContentType: "PlainText",
+              Content: `From: ${data.name} <${data.email}>\n\n${data.message}`
+            }
+          ]
+        }
+      };
+
+      try {
+        const res = await fetch('https://api.elasticemail.com/v4/emails', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-ElasticEmail-ApiKey': API_KEY
+          },
+          body: JSON.stringify(payload)
+        });
+
+        if (!res.ok) {
+          const err = await res.text();
+          throw new Error(err || 'Failed to send');
+        }
+
+        statusEl.textContent = 'Message sent!';
+        form.reset();
+      } catch (err) {
+        console.error(err);
+        statusEl.textContent = 'Sending failed. Please try again.';
+      }
+    });
+  </script>
 </body>
 </html>
